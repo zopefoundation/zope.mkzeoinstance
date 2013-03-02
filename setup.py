@@ -11,52 +11,42 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-""" Setup for zope.mkzeoinstance package
-"""
 
-import os
 from setuptools import setup, find_packages
 
-def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+__version__ = '3.9.6dev'
 
 setup(
     name='zope.mkzeoinstance',
-    version='3.9.6dev',
+    version=__version__,
     url='http://pypi.python.org/pypi/zope.mkzeoinstance',
     license='ZPL 2.1',
     description='Make standalone ZEO database server instances',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
-    long_description=(
-        read('README.txt')
-        + '\n' +
-        read('CHANGES.txt')
-        ),
+    long_description=(open('README.rst').read() + "\n" +
+                      open('CHANGES.rst').read()),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 2.4",
-        "Programming Language :: Python :: 2.5",
         "Programming Language :: Python :: 2.6",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        ],
-
+        "Programming Language :: Python :: 2.7",
+    ],
     packages=find_packages('src'),
     package_dir={'': 'src'},
-    namespace_packages=['zope',],
+    namespace_packages=['zope'],
     include_package_data=True,
     install_requires=[
         'setuptools',
         'ZODB3 >= 3.9.4',
     ],
     zip_safe=False,
-    test_suite='zope.mkzeoinstance.tests.test_suite',
+    test_suite='zope.mkzeoinstance.tests',
     entry_points = {
         'console_scripts': [
-         'mkzeoinstance = zope.mkzeoinstance:main',
-         ],
+            'mkzeoinstance = zope.mkzeoinstance:main',
+        ],
     },
 )

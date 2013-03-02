@@ -1,5 +1,5 @@
-``zope.mkzeoinstance`` Changelog
-================================
+Changelog
+=========
 
 3.9.6 (unreleased)
 ------------------

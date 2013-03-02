@@ -93,8 +93,7 @@ Wrote file %(instance_home)s/bin/zeoctl
 Changed mode for %(instance_home)s/bin/zeoctl to 755
 Wrote file %(instance_home)s/bin/runzeo
 Changed mode for %(instance_home)s/bin/runzeo to 755
-""" % {'instance_home':
-           instance_home}
+""" % {'instance_home': instance_home}
 
         self.assertEqual(temp_out_file.getvalue(), expected_out)
 
@@ -102,9 +101,12 @@ Changed mode for %(instance_home)s/bin/runzeo to 755
         self.assertTrue(os.path.exists(os.path.join(instance_home, 'var')))
         self.assertTrue(os.path.exists(os.path.join(instance_home, 'log')))
         self.assertTrue(os.path.exists(os.path.join(instance_home, 'bin')))
-        self.assertTrue(os.path.exists(os.path.join(instance_home, 'etc', 'zeo.conf')))
-        self.assertTrue(os.path.exists(os.path.join(instance_home, 'bin', 'zeoctl')))
-        self.assertTrue(os.path.exists(os.path.join(instance_home, 'bin', 'runzeo')))
+        self.assertTrue(
+            os.path.exists(os.path.join(instance_home, 'etc', 'zeo.conf')))
+        self.assertTrue(
+            os.path.exists(os.path.join(instance_home, 'bin', 'zeoctl')))
+        self.assertTrue(
+            os.path.exists(os.path.join(instance_home, 'bin', 'runzeo')))
 
     def test_zeo_conf_content(self):
         instance_home = self.instance_home
@@ -218,7 +220,7 @@ class UtilityFunctionsTest(unittest.TestCase):
         sys.stdout = temp_out_file
         mkdirs(path)
         sys.stdout = orig_stdout
-        self.assertEqual('Created directory %s\n'%path,
+        self.assertEqual('Created directory %s\n' % path,
                          temp_out_file.getvalue())
         self.assertTrue(os.path.exists(path))
 
@@ -229,7 +231,7 @@ class UtilityFunctionsTest(unittest.TestCase):
         sys.stdout = temp_out_file
         makedir(self.temp_dir, 'test')
         sys.stdout = orig_stdout
-        self.assertEqual('Created directory %s\n'%path,
+        self.assertEqual('Created directory %s\n' % path,
                          temp_out_file.getvalue())
         self.assertTrue(os.path.exists(path))
 
@@ -243,7 +245,7 @@ class UtilityFunctionsTest(unittest.TestCase):
         makefile(template, self.temp_dir, 'test.txt', **params)
         sys.stdout = orig_stdout
         path = os.path.join(self.temp_dir, 'test.txt')
-        self.assertEqual('Wrote file %s\n'%path,
+        self.assertEqual('Wrote file %s\n' % path,
                          temp_out_file.getvalue())
 
         self.assertEqual('KEY=value',
@@ -259,12 +261,5 @@ class UtilityFunctionsTest(unittest.TestCase):
         path = os.path.join(self.temp_dir, 'test.txt')
         expected_out = """Wrote file %(path)s
 Changed mode for %(path)s to 755\n"""
-        self.assertEqual(expected_out%{'path':path},
+        self.assertEqual(expected_out % {'path': path},
                          temp_out_file.getvalue())
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(ZeoInstanceParamsTest))
-    suite.addTest(unittest.makeSuite(ZeoInstanceCreateTest))
-    suite.addTest(unittest.makeSuite(UtilityFunctionsTest))
-    return suite
