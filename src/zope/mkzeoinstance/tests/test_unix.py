@@ -80,7 +80,8 @@ class ZeoInstanceCreateTest(unittest.TestCase):
 
         temp_out_file = cStringIO.StringIO()
         sys.stdout = temp_out_file
-        self.builder.create(instance_home, self.params)
+        with TempUmask(0o022):
+            self.builder.create(instance_home, self.params)
         sys.stdout = orig_stdout
 
         expected_out = """Created directory %(instance_home)s
@@ -207,6 +208,8 @@ exec "$PYTHON" "$ZEOCTL" -C "$CONFIG_FILE" ${1+"$@"}
 
 class UtilityFunctionsTest(unittest.TestCase):
 
+    _old_umask = None
+
     def setUp(self):
         self.temp_dir = tempfile.mkdtemp()
 
@@ -252,14 +255,31 @@ class UtilityFunctionsTest(unittest.TestCase):
                          open(path).read())
 
     def test_makexfile(self):
+        import os
         orig_stdout = sys.stdout
         temp_out_file = cStringIO.StringIO()
         sys.stdout = temp_out_file
         params = {}
-        makexfile('', self.temp_dir, 'test.txt', **params)
+        with TempUmask(0o022):
+            makexfile('', self.temp_dir, 'test.txt', **params)
         sys.stdout = orig_stdout
         path = os.path.join(self.temp_dir, 'test.txt')
         expected_out = """Wrote file %(path)s
 Changed mode for %(path)s to 755\n"""
         self.assertEqual(expected_out % {'path': path},
                          temp_out_file.getvalue())
+
+
+class TempUmask(object):
+
+    def __init__(self, target_umask):
+        self._target_umask = target_umask
+
+    def __enter__(self):
+        import os
+        self._old_umask = os.umask(self._target_umask)
+        return self
+
+    def __exit__(self, *err):
+        import os
+        os.umask(self._old_umask)
