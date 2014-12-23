@@ -1,6 +1,14 @@
 Changelog
 =========
 
+4.0.0 (Unreleased)
+------------------
+
+- Move dependency from ``ZODB3`` -> [``zdaemon``, ``ZODB``, ``ZEO``].
+  Even though this package doesn't actually import anything from the last
+  two, the generated instance won't be usable unless the host python
+  has them installed.
+
 3.9.6 (2014-12-23)
 ------------------
 

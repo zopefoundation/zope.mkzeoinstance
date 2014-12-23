@@ -14,7 +14,7 @@
 
 from setuptools import setup, find_packages
 
-__version__ = '3.9.6'
+__version__ = '4.0.0.dev0'
 
 setup(
     name='zope.mkzeoinstance',
@@ -43,7 +43,9 @@ setup(
     include_package_data=True,
     install_requires=[
         'setuptools',
-        'ZODB3 >= 3.9.4',
+        'zdaemon',
+        'ZODB',    # not imported, but generated instance requires it
+        'ZEO',     # not imported, but generated instance requires it
     ],
     zip_safe=False,
     test_suite='zope.mkzeoinstance.tests',
