@@ -14,12 +14,12 @@
 
 from setuptools import setup, find_packages
 
-__version__ = '3.9.6dev'
+__version__ = '3.9.6.dev0'
 
 setup(
     name='zope.mkzeoinstance',
     version=__version__,
-    url='http://pypi.python.org/pypi/zope.mkzeoinstance',
+    url='https://github.com/zopefoundation/zope.mkzeoinstance',
     license='ZPL 2.1',
     description='Make standalone ZEO database server instances',
     author='Zope Foundation and Contributors',
@@ -31,8 +31,11 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Zope Public License",
         "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: Implementation :: CPython",
     ],
     packages=find_packages('src'),
     package_dir={'': 'src'},

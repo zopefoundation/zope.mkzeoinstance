@@ -4,7 +4,7 @@ Changelog
 3.9.6 (unreleased)
 ------------------
 
-- TBD
+- Add support for testing on Travis, and with tox.
 
 
 3.9.5 (2011-10-31)
@@ -19,15 +19,15 @@ Changelog
 3.9.4 (2010-04-22)
 ------------------
 
-- Renamed the script / package ``mkzeoinstance`` to avoid clashing with the
+- Rename the script / package ``mkzeoinstance`` to avoid clashing with the
   script bundled with ZODB.
 
-- Added an option to spell the host interface to be listened on, as well as
+- Add an option to spell the host interface to be listened on, as well as
   the port the generated ZEO server configuration.  Thanks to Igor Stroh
   for the patch.  See: https://bugs.launchpad.net/zodb/+bug/143361
 
-- Fixed generated templates to cope with the move of ``zdaemon`` code into
+- Fix generated templates to cope with the move of ``zdaemon`` code into
   its own project.
 
-- Forked from the version of the ``mkzeoinst`` script contained in
+- Fork from the version of the ``mkzeoinst`` script contained in
   ZODB 3.9.4.
