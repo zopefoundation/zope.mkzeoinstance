@@ -37,14 +37,20 @@ import sys
 import stat
 import getopt
 
+import ZODB
 import zdaemon
+
+
+PROGRAM = os.path.basename(sys.argv[0])
+
 
 try:
     text_type = unicode
 except NameError:  # pragma: NO COVER Py3k
     text_type = str
 
-zeo_conf_template = """\
+
+ZEO_CONF_TEMPLATE = """\
 # ZEO configuration file
 
 %%define INSTANCE %(instance_home)s
@@ -88,7 +94,8 @@ zeo_conf_template = """\
 </runner>
 """
 
-zeoctl_template = """\
+
+ZEOCTL_TEMPLATE = """\
 #!/bin/sh
 # %(PACKAGE)s instance control script
 
@@ -102,7 +109,7 @@ zeoctl_template = """\
 
 PYTHON="%(python)s"
 INSTANCE_HOME="%(instance_home)s"
-ZODB3_HOME="%(zodb3_home)s"
+ZODB3_HOME="%(zodb_home)s"
 
 CONFIG_FILE="%(instance_home)s/etc/%(package)s.conf"
 
@@ -114,13 +121,14 @@ ZEOCTL="$ZODB3_HOME/ZEO/zeoctl.py"
 exec "$PYTHON" "$ZEOCTL" -C "$CONFIG_FILE" ${1+"$@"}
 """
 
-runzeo_template = """\
+
+RUNZEO_TEMPLATE = """\
 #!/bin/sh
 # %(PACKAGE)s instance start script
 
 PYTHON="%(python)s"
 INSTANCE_HOME="%(instance_home)s"
-ZODB3_HOME="%(zodb3_home)s"
+ZODB3_HOME="%(zodb_home)s"
 
 CONFIG_FILE="%(instance_home)s/etc/%(package)s.conf"
 
@@ -132,6 +140,7 @@ RUNZEO="$ZODB3_HOME/ZEO/runzeo.py"
 exec "$PYTHON" "$RUNZEO" -C "$CONFIG_FILE" ${1+"$@"}
 """
 
+
 def print_(msg, *args, **kw):
     if args:
         msg = msg % args
@@ -141,65 +150,25 @@ def print_(msg, *args, **kw):
         msg = msg.decode('utf8')
     sys.stdout.write('%s\n' % msg)
 
-def main():
-    ZEOInstanceBuilder().run()
-    print_("All done.")
+
+def usage(msg='', rc=1,
+          exit=sys.exit,  # testing hook
+         ):
+    if not isinstance(msg, str):
+        msg = str(msg)
+    print_(__doc__, program=PROGRAM)
+    if msg:
+        print_(msg)
+    exit(rc)
+
 
 class ZEOInstanceBuilder:
 
-    def run(self):
-        try:
-            opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
-        except getopt.error as msg:
-            print_(msg)
-            sys.exit(2)
-        program = os.path.basename(sys.argv[0])
-        if opts:
-            # There's only the help options, so just dump some help:
-            msg = __doc__ % {"program": program}
-            print_(msg)
-            sys.exit()
-        if len(args) not in [1, 2]:
-            print_("Usage: %s home [[host:]port]", program)
-            sys.exit(2)
-
-        instance_home = args[0]
-        if not os.path.isabs(instance_home):
-            instance_home = os.path.abspath(instance_home)
-
-        zodb3_home = None
-        for entry in sys.path:
-            if os.path.exists(os.path.join(entry, 'ZODB')):
-                zodb3_home = entry
-                break
-        if zodb3_home is None:
-            print_("Can't find ZODB software (not in sys.path)")
-            sys.exit(2)
-
-        zdaemon_home = os.path.split(zdaemon.__path__[0])[0]
-
-        host = None
-        port = 9999
-        if args[1:]:
-            addr_string = args[1]
-            if ':' in addr_string:
-                host, port = addr_string.split(':', 1)
-            else:
-                port = addr_string
-            port = int(port)
-        address = port
-        if host:
-            address = host + ':' + str(port)
-
-        params = self.get_params(zodb3_home, zdaemon_home,
-                                 instance_home, address)
-        self.create(instance_home, params)
-
-    def get_params(self, zodb3_home, zdaemon_home, instance_home, address):
+    def get_params(self, zodb_home, zdaemon_home, instance_home, address):
         return {
             "package": "zeo",
             "PACKAGE": "ZEO",
-            "zodb3_home": zodb3_home,
+            "zodb_home": zodb_home,
             "zdaemon_home": zdaemon_home,
             "instance_home": instance_home,
             "address": address,
@@ -212,9 +181,46 @@ class ZEOInstanceBuilder:
         makedir(home, "var")
         makedir(home, "log")
         makedir(home, "bin")
-        makefile(zeo_conf_template, home, "etc", "zeo.conf", **params)
-        makexfile(zeoctl_template, home, "bin", "zeoctl", **params)
-        makexfile(runzeo_template, home, "bin", "runzeo", **params)
+        makefile(ZEO_CONF_TEMPLATE, home, "etc", "zeo.conf", **params)
+        makexfile(ZEOCTL_TEMPLATE, home, "bin", "zeoctl", **params)
+        makexfile(RUNZEO_TEMPLATE, home, "bin", "runzeo", **params)
+
+    def run(self, argv,
+            usage=usage, # testing hook
+           ):
+        try:
+            opts, args = getopt.getopt(argv, "h", ["help"])
+        except getopt.error as msg:  # pragma: NO COVER
+            usage(msg, 1)
+
+        for k, v in opts:  # pragm: NO COVER
+            if k in ('-h', '--help'):
+                usage(rc=2)
+
+        if len(args) < 1 or len(args) > 2:  
+            usage(rc=1)
+
+        instance_home = os.path.abspath(args[0])
+
+        zodb_home = os.path.split(ZODB.__path__[0])[0]
+        zdaemon_home = os.path.split(zdaemon.__path__[0])[0]
+
+        host = None
+        port = 9999
+        if len(args) == 2:
+            addr_string = args[1]
+            if ':' in addr_string:
+                host, port = addr_string.split(':', 1)
+            else:
+                port = addr_string
+            port = int(port)
+        address = port
+        if host:
+            address = host + ':' + str(port)
+
+        params = self.get_params(zodb_home, zdaemon_home,
+                                 instance_home, address)
+        self.create(instance_home, params)
 
 
 def makedir(*args):
@@ -242,7 +248,7 @@ def makefile(template, *args, **kwds):
             olddata = f.read().strip()
         if olddata:
             if olddata != data.strip():
-                print_("Warning: not overwriting existing file %r", path)
+                print_("Warning: not overwriting existing file %s", path)
             return path
     with open(path, "w") as f:
         f.write(data)
@@ -258,3 +264,7 @@ def makexfile(template, *args, **kwds):
         os.chmod(path, mode)
         print_("Changed mode for %s to %o", path, mode)
     return path
+
+def main():  # pragma: NO COVER
+    ZEOInstanceBuilder().run(sys.argv[1:])
+    print_("All done.")

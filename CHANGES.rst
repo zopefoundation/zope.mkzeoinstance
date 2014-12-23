@@ -4,6 +4,8 @@ Changelog
 4.0.0 (Unreleased)
 ------------------
 
+- 100% unit test coverage.
+
 - Add support for Python 3.2, 3.3, and 3.4.
 
 - Move dependency from ``ZODB3`` -> [``zdaemon``, ``ZODB``, ``ZEO``].
