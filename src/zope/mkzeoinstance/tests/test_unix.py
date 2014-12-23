@@ -12,23 +12,15 @@
 #
 ##############################################################################
 
-import sys
 import unittest
-import tempfile
-import os
-import shutil
-import cStringIO
 
-from zope.mkzeoinstance import ZEOInstanceBuilder
-from zope.mkzeoinstance import mkdirs
-from zope.mkzeoinstance import makedir
-from zope.mkzeoinstance import makefile
-from zope.mkzeoinstance import makexfile
 
 
 class ZeoInstanceParamsTest(unittest.TestCase):
 
     def test_get_params(self):
+        import sys
+        from zope.mkzeoinstance import ZEOInstanceBuilder
         builder = ZEOInstanceBuilder()
 
         params = builder.get_params(zodb3_home='',
@@ -49,12 +41,16 @@ class ZeoInstanceParamsTest(unittest.TestCase):
 class ZeoInstanceCreateTest(unittest.TestCase):
 
     def setUp(self):
+        import os
+        import sys
+        import tempfile
+        import zdaemon
+        from zope.mkzeoinstance import ZEOInstanceBuilder
         self.builder = ZEOInstanceBuilder()
         self.temp_dir = tempfile.mkdtemp()
 
         self.instance_home = os.path.join(self.temp_dir, 'instance')
 
-        import zdaemon
         self.zdaemon_home = os.path.split(zdaemon.__path__[0])[0]
 
         self.zodb3_home = None
@@ -72,13 +68,17 @@ class ZeoInstanceCreateTest(unittest.TestCase):
                        'zodb3_home': self.zodb3_home}
 
     def tearDown(self):
+        import shutil
         shutil.rmtree(self.temp_dir)
 
     def test_create_folders_and_files(self):
+        import io
+        import os
+        import sys
         instance_home = self.instance_home
         orig_stdout = sys.stdout
 
-        temp_out_file = cStringIO.StringIO()
+        temp_out_file = io.StringIO()
         sys.stdout = temp_out_file
         with TempUmask(0o022):
             self.builder.create(instance_home, self.params)
@@ -110,15 +110,19 @@ Changed mode for %(instance_home)s/bin/runzeo to 755
             os.path.exists(os.path.join(instance_home, 'bin', 'runzeo')))
 
     def test_zeo_conf_content(self):
+        import io
+        import os
+        import sys
         instance_home = self.instance_home
         orig_stdout = sys.stdout
 
-        temp_out_file = cStringIO.StringIO()
+        temp_out_file = io.StringIO()
         sys.stdout = temp_out_file
         self.builder.create(instance_home, self.params)
         sys.stdout = orig_stdout
         zeo_conf_path = os.path.join(instance_home, 'etc', 'zeo.conf')
-        zeo_conf = open(zeo_conf_path).read()
+        with open(zeo_conf_path) as f:
+            zeo_conf = f.read()
         expected_out = """# ZEO configuration file
 
 %%define INSTANCE %(instance_home)s
@@ -167,15 +171,19 @@ Changed mode for %(instance_home)s/bin/runzeo to 755
         self.assertEqual(zeo_conf, expected_out)
 
     def test_zeoctl_content(self):
+        import io
+        import os
+        import sys
         instance_home = self.instance_home
         orig_stdout = sys.stdout
 
-        temp_out_file = cStringIO.StringIO()
+        temp_out_file = io.StringIO()
         sys.stdout = temp_out_file
         self.builder.create(instance_home, self.params)
         sys.stdout = orig_stdout
         zeoctl_path = os.path.join(instance_home, 'bin', 'zeoctl')
-        zeoctl = open(zeoctl_path).read()
+        with open(zeoctl_path) as f:
+            zeoctl = f.read()
         expected_out = """#!/bin/sh
 # ZEO instance control script
 
@@ -211,15 +219,21 @@ class UtilityFunctionsTest(unittest.TestCase):
     _old_umask = None
 
     def setUp(self):
+        import tempfile
         self.temp_dir = tempfile.mkdtemp()
 
     def tearDown(self):
+        import shutil
         shutil.rmtree(self.temp_dir)
 
     def test_mkdirs(self):
+        import io
+        import os
+        import sys
+        from zope.mkzeoinstance import mkdirs
         path = os.path.join(self.temp_dir, 'test')
         orig_stdout = sys.stdout
-        temp_out_file = cStringIO.StringIO()
+        temp_out_file = io.StringIO()
         sys.stdout = temp_out_file
         mkdirs(path)
         sys.stdout = orig_stdout
@@ -228,9 +242,13 @@ class UtilityFunctionsTest(unittest.TestCase):
         self.assertTrue(os.path.exists(path))
 
     def test_makedir(self):
+        import io
+        import os
+        import sys
+        from zope.mkzeoinstance import makedir
         path = os.path.join(self.temp_dir, 'test')
         orig_stdout = sys.stdout
-        temp_out_file = cStringIO.StringIO()
+        temp_out_file = io.StringIO()
         sys.stdout = temp_out_file
         makedir(self.temp_dir, 'test')
         sys.stdout = orig_stdout
@@ -239,11 +257,15 @@ class UtilityFunctionsTest(unittest.TestCase):
         self.assertTrue(os.path.exists(path))
 
     def test_makefile(self):
+        import io
+        import os
+        import sys
+        from zope.mkzeoinstance import makefile
         template = "KEY=%(key)s"
         params = {'key': 'value'}
 
         orig_stdout = sys.stdout
-        temp_out_file = cStringIO.StringIO()
+        temp_out_file = io.StringIO()
         sys.stdout = temp_out_file
         makefile(template, self.temp_dir, 'test.txt', **params)
         sys.stdout = orig_stdout
@@ -251,21 +273,24 @@ class UtilityFunctionsTest(unittest.TestCase):
         self.assertEqual('Wrote file %s\n' % path,
                          temp_out_file.getvalue())
 
-        self.assertEqual('KEY=value',
-                         open(path).read())
+        with open(path) as f:
+            self.assertEqual('KEY=value', f.read())
 
     def test_makexfile(self):
+        import io
         import os
+        import sys
+        from zope.mkzeoinstance import makexfile
         orig_stdout = sys.stdout
-        temp_out_file = cStringIO.StringIO()
+        temp_out_file = io.StringIO()
         sys.stdout = temp_out_file
         params = {}
         with TempUmask(0o022):
             makexfile('', self.temp_dir, 'test.txt', **params)
         sys.stdout = orig_stdout
         path = os.path.join(self.temp_dir, 'test.txt')
-        expected_out = """Wrote file %(path)s
-Changed mode for %(path)s to 755\n"""
+        expected_out = ("Wrote file %(path)s\n"
+                        "Changed mode for %(path)s to 755\n")
         self.assertEqual(expected_out % {'path': path},
                          temp_out_file.getvalue())
 

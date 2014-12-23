@@ -37,6 +37,13 @@ import sys
 import stat
 import getopt
 
+import zdaemon
+
+try:
+    text_type = unicode
+except NameError:  # pragma: NO COVER Py3k
+    text_type = str
+
 zeo_conf_template = """\
 # ZEO configuration file
 
@@ -125,26 +132,35 @@ RUNZEO="$ZODB3_HOME/ZEO/runzeo.py"
 exec "$PYTHON" "$RUNZEO" -C "$CONFIG_FILE" ${1+"$@"}
 """
 
+def print_(msg, *args, **kw):
+    if args:
+        msg = msg % args
+    if kw:
+        msg = msg % kw
+    if not isinstance(msg, text_type):
+        msg = msg.decode('utf8')
+    sys.stdout.write('%s\n' % msg)
+
 def main():
     ZEOInstanceBuilder().run()
-    print "All done."
+    print_("All done.")
 
 class ZEOInstanceBuilder:
 
     def run(self):
         try:
             opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
-        except getopt.error, msg:
-            print msg
+        except getopt.error as msg:
+            print_(msg)
             sys.exit(2)
         program = os.path.basename(sys.argv[0])
         if opts:
             # There's only the help options, so just dump some help:
             msg = __doc__ % {"program": program}
-            print msg
+            print_(msg)
             sys.exit()
         if len(args) not in [1, 2]:
-            print "Usage: %s home [[host:]port]" % program
+            print_("Usage: %s home [[host:]port]", program)
             sys.exit(2)
 
         instance_home = args[0]
@@ -157,10 +173,9 @@ class ZEOInstanceBuilder:
                 zodb3_home = entry
                 break
         if zodb3_home is None:
-            print "Can't find the Zope home (not in sys.path)"
+            print_("Can't find ZODB software (not in sys.path)")
             sys.exit(2)
 
-        import zdaemon
         zdaemon_home = os.path.split(zdaemon.__path__[0])[0]
 
         host = None
@@ -216,32 +231,30 @@ def mkdirs(path):
     if head and tail and not os.path.isdir(head):
         mkdirs(head)
     os.mkdir(path)
-    print "Created directory", path
+    print_("Created directory %s", path)
 
 def makefile(template, *args, **kwds):
     path = makedir(*args[:-1])
     path = os.path.join(path, args[-1])
     data = template % kwds
     if os.path.exists(path):
-        f = open(path)
-        olddata = f.read().strip()
-        f.close()
+        with open(path) as f:
+            olddata = f.read().strip()
         if olddata:
             if olddata != data.strip():
-                print "Warning: not overwriting existing file %r" % path
+                print_("Warning: not overwriting existing file %r", path)
             return path
-    f = open(path, "w")
-    f.write(data)
-    f.close()
-    print "Wrote file", path
+    with open(path, "w") as f:
+        f.write(data)
+    print_("Wrote file %s", path)
     return path
 
 def makexfile(template, *args, **kwds):
     path = makefile(template, *args, **kwds)
-    umask = os.umask(022)
+    umask = os.umask(0o022)
     os.umask(umask)
-    mode = 0777 & ~umask
+    mode = 0o0777 & ~umask
     if stat.S_IMODE(os.stat(path)[stat.ST_MODE]) != mode:
         os.chmod(path, mode)
-        print "Changed mode for %s to %o" % (path, mode)
+        print_("Changed mode for %s to %o", path, mode)
     return path
