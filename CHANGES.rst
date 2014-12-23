@@ -4,6 +4,8 @@ Changelog
 4.0.0 (Unreleased)
 ------------------
 
+- Add support for Python 3.2, 3.3, and 3.4.
+
 - Move dependency from ``ZODB3`` -> [``zdaemon``, ``ZODB``, ``ZEO``].
   Even though this package doesn't actually import anything from the last
   two, the generated instance won't be usable unless the host python
