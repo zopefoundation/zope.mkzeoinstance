@@ -14,7 +14,7 @@
 
 from setuptools import setup, find_packages
 
-__version__ = '3.9.6.dev0'
+__version__ = '3.9.6'
 
 setup(
     name='zope.mkzeoinstance',

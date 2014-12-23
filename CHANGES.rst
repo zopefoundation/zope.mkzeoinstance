@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.9.6 (unreleased)
+3.9.6 (2014-12-23)
 ------------------
 
 - Add support for testing on Travis, and with tox.
