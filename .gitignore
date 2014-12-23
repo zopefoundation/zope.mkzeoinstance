@@ -15,3 +15,5 @@ __pycache__
 *.so
 eggs/
 *.egg-info
+coverage.xml
+nosetests.xml
