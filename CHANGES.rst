@@ -8,7 +8,7 @@ Changelog
 
 - Drop support for Python 2.6.
 
-- Add support for Python 3.3, 3.4, and 3.5.
+- Add support for Python 3.3, 3.4, 3.5, and 3.6.
 
 - Move dependency from ``ZODB3`` -> [``zdaemon``, ``ZODB``, ``ZEO``].
   Even though this package doesn't actually import anything from the last
