@@ -3,5 +3,16 @@ include *.txt
 
 recursive-include src *
 
+include bootstrap.py
+exclude bootstrap.py
+
+include buildout.cfg
+exclude buildout.cfg
+
+include tox.ini
+exclude tox.ini
+
+exclude MANIFEST.in
+
 global-exclude *.pyc
 global-exclude *.pyo
