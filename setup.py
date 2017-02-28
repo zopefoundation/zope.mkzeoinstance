@@ -40,6 +40,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: CPython",
     ],
+    keywords="ZEO ZODB instance script",
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['zope'],
