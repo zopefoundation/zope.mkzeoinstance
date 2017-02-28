@@ -14,11 +14,10 @@
 
 from setuptools import setup, find_packages
 
-__version__ = '4.0.0.dev0'
 
 setup(
     name='zope.mkzeoinstance',
-    version=__version__,
+    version='4.0.0.dev0',
     url='https://github.com/zopefoundation/zope.mkzeoinstance',
     license='ZPL 2.1',
     description='Make standalone ZEO database server instances',
