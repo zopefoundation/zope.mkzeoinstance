@@ -52,7 +52,7 @@ setup(
     ],
     zip_safe=False,
     test_suite='zope.mkzeoinstance.tests',
-    entry_points = {
+    entry_points={
         'console_scripts': [
             'mkzeoinstance = zope.mkzeoinstance:main',
         ],
