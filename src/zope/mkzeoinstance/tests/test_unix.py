@@ -271,9 +271,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             'PYTHONPATH="$ZODB3_HOME"',
             'export PYTHONPATH INSTANCE_HOME',
             '',
-            'ZEOCTL="$ZODB3_HOME/ZEO/zeoctl.py"',
-            '',
-            'exec "$PYTHON" "$ZEOCTL" -C "$CONFIG_FILE" ${1+"$@"}',
+            'exec "$PYTHON" -m ZEO.zeoctl -C "$CONFIG_FILE" ${1+"$@"}',
             '',
             ]) % params
 

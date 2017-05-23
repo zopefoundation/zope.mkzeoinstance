@@ -116,9 +116,7 @@ CONFIG_FILE="%(instance_home)s/etc/%(package)s.conf"
 PYTHONPATH="$ZODB3_HOME"
 export PYTHONPATH INSTANCE_HOME
 
-ZEOCTL="$ZODB3_HOME/ZEO/zeoctl.py"
-
-exec "$PYTHON" "$ZEOCTL" -C "$CONFIG_FILE" ${1+"$@"}
+exec "$PYTHON" -m ZEO.zeoctl -C "$CONFIG_FILE" ${1+"$@"}
 """
 
 
@@ -135,9 +133,7 @@ CONFIG_FILE="%(instance_home)s/etc/%(package)s.conf"
 PYTHONPATH="$ZODB3_HOME"
 export PYTHONPATH INSTANCE_HOME
 
-RUNZEO="$ZODB3_HOME/ZEO/runzeo.py"
-
-exec "$PYTHON" "$RUNZEO" -C "$CONFIG_FILE" ${1+"$@"}
+exec "$PYTHON" -m ZEO.runzeo -C "$CONFIG_FILE" ${1+"$@"}
 """
 
 
@@ -197,7 +193,7 @@ class ZEOInstanceBuilder:
             if k in ('-h', '--help'):
                 usage(rc=2)
 
-        if len(args) < 1 or len(args) > 2:  
+        if len(args) < 1 or len(args) > 2:
             usage(rc=1)
 
         instance_home = os.path.abspath(args[0])
