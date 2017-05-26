@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.1 (unreleased)
+4.1 (2017-05-26)
 ----------------
 
 - Fix generated ``runzeo`` and ``zeoctl`` scripts to run with ZEO 5.
