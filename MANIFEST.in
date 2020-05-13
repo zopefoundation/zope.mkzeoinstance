@@ -1,17 +1,14 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/pure-python-without-pypy
 include *.rst
-
-recursive-include src *
-
-include bootstrap.py
-exclude bootstrap.py
-
+include *.txt
 include buildout.cfg
-exclude buildout.cfg
-
 include tox.ini
-exclude tox.ini
 
 exclude MANIFEST.in
 
-global-exclude *.pyc
-global-exclude *.pyo
+recursive-include src *.pt
+recursive-include src *.rst
+recursive-include src *.txt
+recursive-include src *.xml
+recursive-include src *.zcml
