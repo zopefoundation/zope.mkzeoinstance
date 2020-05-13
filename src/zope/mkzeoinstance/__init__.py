@@ -149,7 +149,7 @@ def print_(msg, *args, **kw):
 
 def usage(msg='', rc=1,
           exit=sys.exit,  # testing hook
-         ):
+          ):
     if not isinstance(msg, str):
         msg = str(msg)
     print_(__doc__, program=PROGRAM)
@@ -169,7 +169,7 @@ class ZEOInstanceBuilder:
             "instance_home": instance_home,
             "address": address,
             "python": sys.executable,
-            }
+        }
 
     def create(self, home, params):
         makedir(home)
@@ -182,14 +182,14 @@ class ZEOInstanceBuilder:
         makexfile(RUNZEO_TEMPLATE, home, "bin", "runzeo", **params)
 
     def run(self, argv,
-            usage=usage, # testing hook
-           ):
+            usage=usage,  # testing hook
+            ):
         try:
             opts, args = getopt.getopt(argv, "h", ["help"])
         except getopt.error as msg:  # pragma: NO COVER
             usage(msg, 1)
 
-        for k, v in opts:  # pragm: NO COVER
+        for k, v in opts:  # pragma: NO COVER
             if k in ('-h', '--help'):
                 usage(rc=2)
 
@@ -226,6 +226,7 @@ def makedir(*args):
     mkdirs(path)
     return path
 
+
 def mkdirs(path):
     if os.path.isdir(path):
         return
@@ -234,6 +235,7 @@ def mkdirs(path):
         mkdirs(head)
     os.mkdir(path)
     print_("Created directory %s", path)
+
 
 def makefile(template, *args, **kwds):
     path = makedir(*args[:-1])
@@ -251,6 +253,7 @@ def makefile(template, *args, **kwds):
     print_("Wrote file %s", path)
     return path
 
+
 def makexfile(template, *args, **kwds):
     path = makefile(template, *args, **kwds)
     umask = os.umask(0o022)
@@ -260,6 +263,7 @@ def makexfile(template, *args, **kwds):
         os.chmod(path, mode)
         print_("Changed mode for %s to %o", path, mode)
     return path
+
 
 def main():  # pragma: NO COVER
     ZEOInstanceBuilder().run(sys.argv[1:])

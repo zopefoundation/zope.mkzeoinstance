@@ -15,7 +15,6 @@
 import unittest
 
 
-
 class Test_print_(unittest.TestCase):
 
     def _callFUT(self, *args, **kw):
@@ -47,8 +46,10 @@ class Test_usage(unittest.TestCase):
     def test_defaults(self):
         from zope.mkzeoinstance import __doc__ as doc, PROGRAM
         _exited = []
+
         def _exit(rc):
             _exited.append(rc)
+
         with TempStdout() as out:
             self._callFUT(exit=_exit)
             self.assertEqual(out.getvalue(),
@@ -58,8 +59,10 @@ class Test_usage(unittest.TestCase):
     def test_explicit(self):
         from zope.mkzeoinstance import __doc__ as doc, PROGRAM
         _exited = []
+
         def _exit(rc):
             _exited.append(rc)
+
         with TempStdout() as out:
             self._callFUT('MSG', 2, exit=_exit)
             self.assertEqual(out.getvalue(),
@@ -69,8 +72,10 @@ class Test_usage(unittest.TestCase):
     def test_w_non_str_message(self):
         from zope.mkzeoinstance import __doc__ as doc, PROGRAM
         msg = Exception('Foo')
+
         def _exit(rc):
             pass
+
         with TempStdout() as out:
             self._callFUT(msg, exit=_exit)
             self.assertEqual(out.getvalue(),
@@ -123,7 +128,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
                 'instance_home': instance_home,
                 'address': '99999',
                 'zodb_home': zodb_home,
-               }
+                }
 
     def test_get_params(self):
         import sys
@@ -162,7 +167,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             "Wrote file %(instance_home)s/bin/runzeo",
             "Changed mode for %(instance_home)s/bin/runzeo to 755",
             "",
-            ]) % params
+        ]) % params
 
         builder = self._makeOne()
         with TempStdout() as temp_out_file:
@@ -229,14 +234,14 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             "",
             "  # This logfile should match the one in the zeo.conf file.",
             "  # It is used by zdctl's logtail command, "
-                        "zdrun/zdctl doesn't write it.",
+            "zdrun/zdctl doesn't write it.",
             "  logfile $INSTANCE/log/zeo.log",
             "</runner>",
             '',
-            ]) % params
+        ]) % params
 
         builder = self._makeOne()
-        with TempStdout() as temp_out_file:
+        with TempStdout():
             builder.create(instance_home, params)
 
         with open(zeo_conf_path) as f:
@@ -253,10 +258,10 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             '# ZEO instance control script',
             '',
             '# The following two lines are for chkconfig.  '
-                            'On Red Hat Linux (and',
+            'On Red Hat Linux (and',
             '# some other systems), you can copy or symlink this script into',
             '# /etc/rc.d/init.d/ and then use chkconfig(8) to '
-                            'automatically start',
+            'automatically start',
             '# ZEO at boot time.',
             '',
             '# chkconfig: 345 90 10',
@@ -273,10 +278,10 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             '',
             'exec "$PYTHON" -m ZEO.zeoctl -C "$CONFIG_FILE" ${1+"$@"}',
             '',
-            ]) % params
+        ]) % params
 
         builder = self._makeOne()
-        with TempStdout() as temp_out_file:
+        with TempStdout():
             builder.create(instance_home, params)
 
         with open(zeoctl_path) as f:
@@ -329,7 +334,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             "Wrote file %(instance_home)s/bin/runzeo",
             "Changed mode for %(instance_home)s/bin/runzeo to 755",
             "",
-            ]) % params
+        ]) % params
 
         with TempStdout() as temp_out_file:
             with TempUmask(0o022):
@@ -355,7 +360,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
         params = self._makeParams()
         instance_home = params['instance_home']
 
-        with TempStdout() as temp_out_file:
+        with TempStdout():
             with TempUmask(0o022):
                 builder.run([instance_home, '8888'])
 
@@ -371,7 +376,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
         params = self._makeParams()
         instance_home = params['instance_home']
 
-        with TempStdout() as temp_out_file:
+        with TempStdout():
             with TempUmask(0o022):
                 builder.run([instance_home, 'localhost:8888'])
 
@@ -392,7 +397,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
         with TempStdout() as temp_out_file:
             mkdirs(path)
             self.assertEqual('Created directory %s\n' % path,
-                            temp_out_file.getvalue())
+                             temp_out_file.getvalue())
         self.assertTrue(os.path.exists(path))
 
     def test_mkdirs_nested(self):
@@ -406,8 +411,8 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
             mkdirs(child_path)
             self.assertEqual('Created directory %s\n'
                              'Created directory %s\n'
-                                % (parent_path, child_path),
-                            temp_out_file.getvalue())
+                             % (parent_path, child_path),
+                             temp_out_file.getvalue())
         self.assertTrue(os.path.isdir(child_path))
 
     def test_makedir(self):
@@ -433,7 +438,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
         with TempStdout() as temp_out_file:
             makefile(template, temp_dir, 'test.txt', **params)
             self.assertEqual('Wrote file %s\n' % path,
-                            temp_out_file.getvalue())
+                             temp_out_file.getvalue())
 
         with open(path) as f:
             self.assertEqual('KEY=value', f.read())
@@ -471,7 +476,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
             makefile(template, temp_dir, 'test.txt', **params)
 
         self.assertEqual('Warning: not overwriting existing file %s\n' % path,
-                          temp_out_file.getvalue())
+                         temp_out_file.getvalue())
 
         with open(path) as f:
             self.assertEqual('NOT THE SAME CONTENT', f.read())
@@ -484,7 +489,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
         path = os.path.join(temp_dir, 'test.txt')
         expected_out = ("Wrote file %(path)s\n"
                         "Changed mode for %(path)s to 755\n"
-                       ) % {'path': path}
+                        ) % {'path': path}
 
         with TempStdout() as temp_out_file:
 
@@ -492,7 +497,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
                 makexfile('', temp_dir, 'test.txt', **params)
 
             self.assertEqual(expected_out,
-                            temp_out_file.getvalue())
+                             temp_out_file.getvalue())
 
 
 class TempStdout(object):
