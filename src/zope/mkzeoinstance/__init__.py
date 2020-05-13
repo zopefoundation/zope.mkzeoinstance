@@ -46,7 +46,7 @@ PROGRAM = os.path.basename(sys.argv[0])
 
 try:
     text_type = unicode
-except NameError:  # pragma: nocover Py3k
+except NameError:  # pragma: PY3
     text_type = str
 
 
