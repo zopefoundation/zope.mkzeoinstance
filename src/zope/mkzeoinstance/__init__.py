@@ -46,7 +46,7 @@ PROGRAM = os.path.basename(sys.argv[0])
 
 try:
     text_type = unicode
-except NameError:  # pragma: NO COVER Py3k
+except NameError:  # pragma: nocover Py3k
     text_type = str
 
 
@@ -186,10 +186,10 @@ class ZEOInstanceBuilder:
             ):
         try:
             opts, args = getopt.getopt(argv, "h", ["help"])
-        except getopt.error as msg:  # pragma: NO COVER
+        except getopt.error as msg:  # pragma: nocover
             usage(msg, 1)
 
-        for k, v in opts:  # pragma: NO COVER
+        for k, v in opts:  # pragma: nocover
             if k in ('-h', '--help'):
                 usage(rc=2)
 
@@ -265,6 +265,6 @@ def makexfile(template, *args, **kwds):
     return path
 
 
-def main():  # pragma: NO COVER
+def main():  # pragma: nocover
     ZEOInstanceBuilder().run(sys.argv[1:])
     print_("All done.")
