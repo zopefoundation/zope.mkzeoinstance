@@ -233,8 +233,8 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             "  zdrun %(zdaemon_home)s/zdaemon/zdrun.py",
             "",
             "  # This logfile should match the one in the zeo.conf file.",
-            "  # It is used by zdctl's logtail command, "
-            "zdrun/zdctl doesn't write it.",
+            ("  # It is used by zdctl's logtail command, "
+             "zdrun/zdctl doesn't write it."),
             "  logfile $INSTANCE/log/zeo.log",
             "</runner>",
             '',
@@ -257,11 +257,11 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             '#!/bin/sh',
             '# ZEO instance control script',
             '',
-            '# The following two lines are for chkconfig.  '
-            'On Red Hat Linux (and',
+            ('# The following two lines are for chkconfig.  '
+             'On Red Hat Linux (and'),
             '# some other systems), you can copy or symlink this script into',
-            '# /etc/rc.d/init.d/ and then use chkconfig(8) to '
-            'automatically start',
+            ('# /etc/rc.d/init.d/ and then use chkconfig(8) to '
+             'automatically start'),
             '# ZEO at boot time.',
             '',
             '# chkconfig: 345 90 10',
