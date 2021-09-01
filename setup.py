@@ -60,8 +60,13 @@ setup(
         'ZODB',    # not imported, but generated instance requires it
         'ZEO',     # not imported, but generated instance requires it
     ],
+    extras_require=dict(
+        test=[
+            'zope.testrunner',
+        ],
+    ),
+
     zip_safe=False,
-    test_suite='zope.mkzeoinstance.tests',
     entry_points={
         'console_scripts': [
             'mkzeoinstance = zope.mkzeoinstance:main',
