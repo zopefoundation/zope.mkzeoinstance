@@ -23,7 +23,7 @@ setup(
     license='ZPL 2.1',
     description='Make standalone ZEO database server instances',
     author='Zope Foundation and Contributors',
-    author_email='zope-dev@zope.org',
+    author_email='zope-dev@zope.dev',
     long_description=(open('README.rst').read() + "\n" +
                       open('CHANGES.rst').read()),
     classifiers=[
@@ -45,9 +45,7 @@ setup(
     package_dir={'': 'src'},
     namespace_packages=['zope'],
     include_package_data=True,
-    python_requires=','.join([
-        '>=3.7',
-    ]),
+    python_requires='>=3.7',
     install_requires=[
         'setuptools',
         'zdaemon',

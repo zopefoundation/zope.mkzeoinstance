@@ -44,12 +44,6 @@ import ZODB
 PROGRAM = os.path.basename(sys.argv[0])
 
 
-try:
-    text_type = unicode
-except NameError:  # pragma: PY3
-    text_type = str
-
-
 ZEO_CONF_TEMPLATE = """\
 # ZEO configuration file
 
@@ -142,7 +136,7 @@ def print_(msg, *args, **kw):
         msg = msg % args
     if kw:
         msg = msg % kw
-    if not isinstance(msg, text_type):
+    if not isinstance(msg, str):
         msg = msg.decode('utf8')
     sys.stdout.write('%s\n' % msg)
 

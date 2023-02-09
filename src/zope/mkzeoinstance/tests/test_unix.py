@@ -85,12 +85,12 @@ class Test_usage(unittest.TestCase):
                              ("%s\nFoo\n" % doc) % {'program': PROGRAM})
 
 
-class _WithTempdir(object):
+class _WithTempdir:
 
     _temp_dir = None
 
     def tearDown(self):
-        super(_WithTempdir, self).tearDown()
+        super().tearDown()
         if self._temp_dir is not None:
             import shutil
             shutil.rmtree(self._temp_dir)
@@ -511,7 +511,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
                              temp_out_file.getvalue())
 
 
-class TempStdout(object):
+class TempStdout:
 
     def __enter__(self):
         import io
@@ -525,7 +525,7 @@ class TempStdout(object):
         sys.stdout = self._old_stdout
 
 
-class TempUmask(object):
+class TempUmask:
 
     def __init__(self, target_umask):
         self._target_umask = target_umask
@@ -544,7 +544,7 @@ class UsageExit(Exception):
     pass
 
 
-class UsageStub(object):
+class UsageStub:
 
     _called_with = None
 
