@@ -12,17 +12,18 @@
 #
 ##############################################################################
 
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
 
 
 setup(
     name='zope.mkzeoinstance',
-    version='4.2.dev0',
+    version='5.0.dev0',
     url='https://github.com/zopefoundation/zope.mkzeoinstance',
     license='ZPL 2.1',
     description='Make standalone ZEO database server instances',
     author='Zope Foundation and Contributors',
-    author_email='zope-dev@zope.org',
+    author_email='zope-dev@zope.dev',
     long_description=(open('README.rst').read() + "\n" +
                       open('CHANGES.rst').read()),
     classifiers=[
@@ -31,14 +32,12 @@ setup(
         "License :: OSI Approved :: Zope Public License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
     ],
     keywords="ZEO ZODB instance script",
@@ -46,14 +45,7 @@ setup(
     package_dir={'': 'src'},
     namespace_packages=['zope'],
     include_package_data=True,
-    python_requires=', '.join([
-        '>=2.7',
-        '!=3.0.*',
-        '!=3.1.*',
-        '!=3.2.*',
-        '!=3.3.*',
-        '!=3.4.*',
-    ]),
+    python_requires='>=3.7',
     install_requires=[
         'setuptools',
         'zdaemon',

@@ -32,22 +32,16 @@ would be written if it didn't exist.
 # WARNING!  Several templates and functions here are reused by ZRS.
 # So be careful with changes.
 
-import os
-import sys
-import stat
 import getopt
+import os
+import stat
+import sys
 
-import ZODB
 import zdaemon
+import ZODB
 
 
 PROGRAM = os.path.basename(sys.argv[0])
-
-
-try:
-    text_type = unicode
-except NameError:  # pragma: PY3
-    text_type = str
 
 
 ZEO_CONF_TEMPLATE = """\
@@ -142,7 +136,7 @@ def print_(msg, *args, **kw):
         msg = msg % args
     if kw:
         msg = msg % kw
-    if not isinstance(msg, text_type):
+    if not isinstance(msg, str):
         msg = msg.decode('utf8')
     sys.stdout.write('%s\n' % msg)
 
