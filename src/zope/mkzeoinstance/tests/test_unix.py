@@ -44,7 +44,8 @@ class Test_usage(unittest.TestCase):
         usage(*args, **kw)
 
     def test_defaults(self):
-        from zope.mkzeoinstance import __doc__ as doc, PROGRAM
+        from zope.mkzeoinstance import PROGRAM
+        from zope.mkzeoinstance import __doc__ as doc
         _exited = []
 
         def _exit(rc):
@@ -57,7 +58,8 @@ class Test_usage(unittest.TestCase):
         self.assertEqual(_exited, [1])
 
     def test_explicit(self):
-        from zope.mkzeoinstance import __doc__ as doc, PROGRAM
+        from zope.mkzeoinstance import PROGRAM
+        from zope.mkzeoinstance import __doc__ as doc
         _exited = []
 
         def _exit(rc):
@@ -70,7 +72,8 @@ class Test_usage(unittest.TestCase):
         self.assertEqual(_exited, [2])
 
     def test_w_non_str_message(self):
-        from zope.mkzeoinstance import __doc__ as doc, PROGRAM
+        from zope.mkzeoinstance import PROGRAM
+        from zope.mkzeoinstance import __doc__ as doc
         msg = Exception('Foo')
 
         def _exit(rc):
@@ -111,8 +114,9 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
     def _makeParams(self, instance_home=None):
         import os
         import sys
-        import ZODB
+
         import zdaemon
+        import ZODB
 
         if instance_home is None:
             temp_dir = self._makeTempDir()
@@ -390,6 +394,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
 
     def test_mkdirs(self):
         import os
+
         from zope.mkzeoinstance import mkdirs
         temp_dir = self._makeTempDir()
         path = os.path.join(temp_dir, 'test')
@@ -402,6 +407,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
 
     def test_mkdirs_nested(self):
         import os
+
         from zope.mkzeoinstance import mkdirs
         temp_dir = self._makeTempDir()
         parent_path = os.path.join(temp_dir, 'parent')
@@ -417,6 +423,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
 
     def test_makedir(self):
         import os
+
         from zope.mkzeoinstance import makedir
         temp_dir = self._makeTempDir()
         path = os.path.join(temp_dir, 'test')
@@ -429,6 +436,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
 
     def test_makefile(self):
         import os
+
         from zope.mkzeoinstance import makefile
         template = "KEY=%(key)s"
         params = {'key': 'value'}
@@ -445,6 +453,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
 
     def test_makefile_existing_same_content(self):
         import os
+
         from zope.mkzeoinstance import makefile
         template = "KEY=%(key)s"
         params = {'key': 'value'}
@@ -463,6 +472,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
 
     def test_makefile_existing_different_content(self):
         import os
+
         from zope.mkzeoinstance import makefile
         template = "KEY=%(key)s"
         params = {'key': 'value'}
@@ -483,6 +493,7 @@ class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
 
     def test_makexfile(self):
         import os
+
         from zope.mkzeoinstance import makexfile
         params = {}
         temp_dir = self._makeTempDir()

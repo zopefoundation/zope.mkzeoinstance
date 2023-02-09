@@ -32,13 +32,13 @@ would be written if it didn't exist.
 # WARNING!  Several templates and functions here are reused by ZRS.
 # So be careful with changes.
 
-import os
-import sys
-import stat
 import getopt
+import os
+import stat
+import sys
 
-import ZODB
 import zdaemon
+import ZODB
 
 
 PROGRAM = os.path.basename(sys.argv[0])
