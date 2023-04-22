@@ -12,7 +12,6 @@
 #
 ##############################################################################
 """%(program)s -- create a ZEO instance.
-
 Usage: %(program)s home [[host:]port] [options]
 
 Given an "instance home directory" <home> and some configuration
@@ -194,16 +193,13 @@ class ZEOInstanceBuilder:
             usage=usage,  # testing hook
             ):
         
-
-    
         parser = argparse.ArgumentParser(exit_on_error = False, add_help=False)
         parser.add_argument('instance_home', nargs='?', default=None)
         parser.add_argument('addr_string', nargs='?', default='9999')
         parser.add_argument('-h', '--help', action = 'store_true') 
-        parser.add_argument('-b', '--blobs', required=False, default=None, const=ZEO_DEFAULT_BLOB_DIR, nargs='?') # blob-dir=
+        parser.add_argument('-b', '--blobs', required=False, default=None, const=ZEO_DEFAULT_BLOB_DIR, nargs='?')
 
         parsed_args, unknown_args = parser.parse_known_args(argv)
-
 
         if len(unknown_args) > 0:
             usage(rc=1)
@@ -230,11 +226,6 @@ class ZEOInstanceBuilder:
             
         blob_dir = parsed_args.blobs if parsed_args.blobs else None
         
-        # if blob_dir is not None:
-        #     # check if user provider valid blob dir
-        #     if not os.path.isabs(blob_dir) or os.path.basename(blob_dir) != "blobs" or not os.path.exists(blob_dir):
-        #         usage(rc=1)
-
         params = self.get_params(zodb_home, zdaemon_home, instance_home, address, blob_dir)
         self.create(instance_home, params)
 

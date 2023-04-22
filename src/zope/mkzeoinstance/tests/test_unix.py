@@ -147,7 +147,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
                            'instance_home': '',
                            'address': '',
                            'zodb_home': '',
-                           'blob_dir': '' # Edit
+                           'blob_dir': ''
                            }
 
         builder = self._makeOne()
@@ -155,7 +155,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
                                     zdaemon_home='',
                                     instance_home='',
                                     address='',
-                                    blob_dir='' # Edit
+                                    blob_dir=''
                                     )
 
         self.assertEqual(params, expected_params)
@@ -177,7 +177,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             "Changed mode for %(instance_home)s/bin/zeoctl to 755",
             "Wrote file %(instance_home)s/bin/runzeo",
             "Changed mode for %(instance_home)s/bin/runzeo to 755",
-            "",
+            ""
         ]) % params
 
         builder = self._makeOne()
