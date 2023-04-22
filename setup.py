@@ -51,7 +51,6 @@ setup(
         'zdaemon',
         'ZODB',    # not imported, but generated instance requires it
         'ZEO',     # not imported, but generated instance requires it
-        'argparse'
     ],
     extras_require=dict(
         test=[
