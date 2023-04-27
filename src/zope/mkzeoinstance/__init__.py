@@ -26,7 +26,7 @@ options (all of which have default values), create the following:
 Options:
     -h, --help         -- Display this help and exit
     -b, --blobs        -- Directory for Blobs. By default, it will create
-                          a blobs directory at <home>/var/blobs unless a 
+                          a blobs directory at <home>/var/blobs unless a
                           path is provided -b path/to/blobs
 
 The script will not overwrite existing files; instead, it will issue a
@@ -161,7 +161,8 @@ def usage(msg='', rc=1,
 
 class ZEOInstanceBuilder:
 
-    def get_params(self, zodb_home, zdaemon_home, instance_home, address, blob_dir):
+    def get_params(self, zodb_home, zdaemon_home,
+                   instance_home, address, blob_dir):
         return {
             "package": "zeo",
             "PACKAGE": "ZEO",
@@ -179,7 +180,7 @@ class ZEOInstanceBuilder:
         makedir(home, "var")
         makedir(home, "log")
         makedir(home, "bin")
-        
+
         # Create dir only when default is selected
         if ZEO_DEFAULT_BLOB_DIR in params.get('blob_dir', ''):
             makedir(home, "var/blobs")
@@ -187,23 +188,23 @@ class ZEOInstanceBuilder:
         makefile(ZEO_CONF_TEMPLATE, home, "etc", "zeo.conf", **params)
         makexfile(ZEOCTL_TEMPLATE, home, "bin", "zeoctl", **params)
         makexfile(RUNZEO_TEMPLATE, home, "bin", "runzeo", **params)
-        
 
     def run(self, argv,
             usage=usage,  # testing hook
             ):
-        
-        parser = argparse.ArgumentParser(exit_on_error = False, add_help=False)
+
+        parser = argparse.ArgumentParser(add_help=False)
         parser.add_argument('instance_home', nargs='?', default=None)
         parser.add_argument('addr_string', nargs='?', default='9999')
-        parser.add_argument('-h', '--help', action = 'store_true') 
-        parser.add_argument('-b', '--blobs', required=False, default=None, const=ZEO_DEFAULT_BLOB_DIR, nargs='?')
+        parser.add_argument('-h', '--help', action='store_true')
+        parser.add_argument('-b', '--blobs', required=False, default=None,
+                            const=ZEO_DEFAULT_BLOB_DIR, nargs='?')
 
         parsed_args, unknown_args = parser.parse_known_args(argv)
 
         if len(unknown_args) > 0:
             usage(rc=1)
-            
+
         if parsed_args.help:
             usage(rc=2)
         elif parsed_args.instance_home is None:
@@ -223,10 +224,11 @@ class ZEOInstanceBuilder:
             address = int(addr_string)
         else:
             usage(rc=1)
-            
+
         blob_dir = parsed_args.blobs if parsed_args.blobs else None
-        
-        params = self.get_params(zodb_home, zdaemon_home, instance_home, address, blob_dir)
+
+        params = self.get_params(
+            zodb_home, zdaemon_home, instance_home, address, blob_dir)
         self.create(instance_home, params)
 
 
@@ -274,7 +276,6 @@ def makexfile(template, *args, **kwds):
         os.chmod(path, mode)
         print_("Changed mode for %s to %o", path, mode)
     return path
-
 
 
 def main():  # pragma: nocover

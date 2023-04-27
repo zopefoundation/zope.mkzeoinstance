@@ -113,7 +113,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
     def _makeOne(self):
         return self._getTargetClass()()
 
-    def _makeParams(self, instance_home=None, blob_dir = None):
+    def _makeParams(self, instance_home=None, blob_dir=None):
         import os
         import sys
 
@@ -201,6 +201,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
 
     def test_create_folders_and_files_w_blobs(self):
         import os
+
         from zope.mkzeoinstance import ZEO_DEFAULT_BLOB_DIR
 
         params = self._makeParams(blob_dir=ZEO_DEFAULT_BLOB_DIR)
@@ -239,7 +240,6 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             os.path.exists(os.path.join(instance_home, 'bin', 'zeoctl')))
         self.assertTrue(
             os.path.exists(os.path.join(instance_home, 'bin', 'runzeo')))
-
 
     def test_zeo_conf_content(self):
         import os
@@ -303,11 +303,12 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
 
     def test_zeo_conf_content_w_default_blobs(self):
         import os
+
         from zope.mkzeoinstance import ZEO_DEFAULT_BLOB_DIR
 
         builder = self._makeOne()
         params = self._makeParams(blob_dir=ZEO_DEFAULT_BLOB_DIR)
-                
+
         instance_home = params['instance_home']
         zeo_conf_path = os.path.join(instance_home, 'etc', 'zeo.conf')
         expected_out = "\n".join([
@@ -368,7 +369,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
 
         builder = self._makeOne()
         params = self._makeParams(blob_dir="/usr/local/blobs")
-                
+
         instance_home = params['instance_home']
         zeo_conf_path = os.path.join(instance_home, 'etc', 'zeo.conf')
         expected_out = "\n".join([
@@ -476,7 +477,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
         usage = UsageStub()
         self.assertRaises(UsageExit, builder.run, ['--help'], usage=usage)
         self.assertEqual(usage._called_with, ('NO MESSAGE', 2))
-        
+
     def test_run_wo_arguments(self):
         builder = self._makeOne()
         usage = UsageStub()
@@ -517,7 +518,6 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             with TempUmask(0o022):
                 builder.run([where])
                 self.assertEqual(temp_out_file.getvalue(), expected_out)
-
 
         self.assertTrue(os.path.exists(os.path.join(abswhere, 'etc')))
         self.assertTrue(os.path.exists(os.path.join(abswhere, 'var')))
