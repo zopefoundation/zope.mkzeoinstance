@@ -12,8 +12,6 @@
 #
 ##############################################################################
 
-# Run Tests: python -m unittest test_unix
-
 import unittest
 
 
