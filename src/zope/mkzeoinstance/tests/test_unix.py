@@ -111,7 +111,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
     def _makeOne(self):
         return self._getTargetClass()()
 
-    def _makeParams(self, instance_home=None):
+    def _makeParams(self, instance_home=None, blob_dir=None):
         import os
         import sys
 
@@ -132,6 +132,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
                 'instance_home': instance_home,
                 'address': '99999',
                 'zodb_home': zodb_home,
+                'blob_dir': f"blob-dir {blob_dir}" if blob_dir else "",
                 }
 
     def test_get_params(self):
@@ -143,13 +144,17 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
                            'zdaemon_home': '',
                            'instance_home': '',
                            'address': '',
-                           'zodb_home': ''}
+                           'zodb_home': '',
+                           'blob_dir': ''
+                           }
 
         builder = self._makeOne()
         params = builder.get_params(zodb_home='',
                                     zdaemon_home='',
                                     instance_home='',
-                                    address='')
+                                    address='',
+                                    blob_dir=''
+                                    )
 
         self.assertEqual(params, expected_params)
 
@@ -165,6 +170,48 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             "Created directory %(instance_home)s/var",
             "Created directory %(instance_home)s/log",
             "Created directory %(instance_home)s/bin",
+            "Wrote file %(instance_home)s/etc/zeo.conf",
+            "Wrote file %(instance_home)s/bin/zeoctl",
+            "Changed mode for %(instance_home)s/bin/zeoctl to 755",
+            "Wrote file %(instance_home)s/bin/runzeo",
+            "Changed mode for %(instance_home)s/bin/runzeo to 755",
+            ""
+        ]) % params
+
+        builder = self._makeOne()
+        with TempStdout() as temp_out_file:
+
+            with TempUmask(0o022):
+                builder.create(instance_home, params)
+
+            self.assertEqual(temp_out_file.getvalue(), expected_out)
+
+        self.assertTrue(os.path.exists(os.path.join(instance_home, 'etc')))
+        self.assertTrue(os.path.exists(os.path.join(instance_home, 'var')))
+        self.assertTrue(os.path.exists(os.path.join(instance_home, 'log')))
+        self.assertTrue(os.path.exists(os.path.join(instance_home, 'bin')))
+        self.assertTrue(
+            os.path.exists(os.path.join(instance_home, 'etc', 'zeo.conf')))
+        self.assertTrue(
+            os.path.exists(os.path.join(instance_home, 'bin', 'zeoctl')))
+        self.assertTrue(
+            os.path.exists(os.path.join(instance_home, 'bin', 'runzeo')))
+
+    def test_create_folders_and_files_w_blobs(self):
+        import os
+
+        from zope.mkzeoinstance import ZEO_DEFAULT_BLOB_DIR
+
+        params = self._makeParams(blob_dir=ZEO_DEFAULT_BLOB_DIR)
+        instance_home = params['instance_home']
+
+        expected_out = "\n".join([
+            "Created directory %(instance_home)s",
+            "Created directory %(instance_home)s/etc",
+            "Created directory %(instance_home)s/var",
+            "Created directory %(instance_home)s/log",
+            "Created directory %(instance_home)s/bin",
+            "Created directory %(instance_home)s/var/blobs",
             "Wrote file %(instance_home)s/etc/zeo.conf",
             "Wrote file %(instance_home)s/bin/zeoctl",
             "Changed mode for %(instance_home)s/bin/zeoctl to 755",
@@ -214,6 +261,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             "",
             "<filestorage 1>",
             "  path $INSTANCE/var/Data.fs",
+            "  %(blob_dir)s",
             "</filestorage>",
             "",
             "<eventlog>",
@@ -245,6 +293,130 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
         ]) % params
 
         builder = self._makeOne()
+        with TempStdout():
+            builder.create(instance_home, params)
+
+        with open(zeo_conf_path) as f:
+            self.assertEqual(f.read(), expected_out)
+
+    def test_zeo_conf_content_w_default_blobs(self):
+        import os
+
+        from zope.mkzeoinstance import ZEO_DEFAULT_BLOB_DIR
+
+        builder = self._makeOne()
+        params = self._makeParams(blob_dir=ZEO_DEFAULT_BLOB_DIR)
+
+        instance_home = params['instance_home']
+        zeo_conf_path = os.path.join(instance_home, 'etc', 'zeo.conf')
+        expected_out = "\n".join([
+            "# ZEO configuration file",
+            "",
+            "%%define INSTANCE %(instance_home)s",
+            "",
+            "<zeo>",
+            "  address 99999",
+            "  read-only false",
+            "  invalidation-queue-size 100",
+            "  # pid-filename $INSTANCE/var/ZEO.pid",
+            "  # monitor-address PORT",
+            "  # transaction-timeout SECONDS",
+            "</zeo>",
+            "",
+            "<filestorage 1>",
+            "  path $INSTANCE/var/Data.fs",
+            "  %(blob_dir)s",
+            "</filestorage>",
+            "",
+            "<eventlog>",
+            "  level info",
+            "  <logfile>",
+            "    path $INSTANCE/log/zeo.log",
+            "  </logfile>",
+            "</eventlog>",
+            "",
+            "<runner>",
+            "  program $INSTANCE/bin/runzeo",
+            "  socket-name $INSTANCE/var/zeo.zdsock",
+            "  daemon true",
+            "  forever false",
+            "  backoff-limit 10",
+            "  exit-codes 0, 2",
+            "  directory $INSTANCE",
+            "  default-to-interactive true",
+            "  # user zope",
+            "  python %(executable)s",
+            "  zdrun %(zdaemon_home)s/zdaemon/zdrun.py",
+            "",
+            "  # This logfile should match the one in the zeo.conf file.",
+            ("  # It is used by zdctl's logtail command, "
+             "zdrun/zdctl doesn't write it."),
+            "  logfile $INSTANCE/log/zeo.log",
+            "</runner>",
+            '',
+        ]) % params
+
+        with TempStdout():
+            builder.create(instance_home, params)
+
+        with open(zeo_conf_path) as f:
+            self.assertEqual(f.read(), expected_out)
+
+    def test_zeo_conf_content_w_specified_blobs(self):
+        import os
+
+        builder = self._makeOne()
+        params = self._makeParams(blob_dir="/usr/local/blobs")
+
+        instance_home = params['instance_home']
+        zeo_conf_path = os.path.join(instance_home, 'etc', 'zeo.conf')
+        expected_out = "\n".join([
+            "# ZEO configuration file",
+            "",
+            "%%define INSTANCE %(instance_home)s",
+            "",
+            "<zeo>",
+            "  address 99999",
+            "  read-only false",
+            "  invalidation-queue-size 100",
+            "  # pid-filename $INSTANCE/var/ZEO.pid",
+            "  # monitor-address PORT",
+            "  # transaction-timeout SECONDS",
+            "</zeo>",
+            "",
+            "<filestorage 1>",
+            "  path $INSTANCE/var/Data.fs",
+            "  %(blob_dir)s",
+            "</filestorage>",
+            "",
+            "<eventlog>",
+            "  level info",
+            "  <logfile>",
+            "    path $INSTANCE/log/zeo.log",
+            "  </logfile>",
+            "</eventlog>",
+            "",
+            "<runner>",
+            "  program $INSTANCE/bin/runzeo",
+            "  socket-name $INSTANCE/var/zeo.zdsock",
+            "  daemon true",
+            "  forever false",
+            "  backoff-limit 10",
+            "  exit-codes 0, 2",
+            "  directory $INSTANCE",
+            "  default-to-interactive true",
+            "  # user zope",
+            "  python %(executable)s",
+            "  zdrun %(zdaemon_home)s/zdaemon/zdrun.py",
+            "",
+            "  # This logfile should match the one in the zeo.conf file.",
+            ("  # It is used by zdctl's logtail command, "
+             "zdrun/zdctl doesn't write it."),
+            "  logfile $INSTANCE/log/zeo.log",
+            "</runner>",
+            '',
+        ]) % params
+
         with TempStdout():
             builder.create(instance_home, params)
 
@@ -296,7 +468,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
         usage = UsageStub()
         self.assertRaises(UsageExit, builder.run, ['--nonesuch'], usage=usage)
         self.assertEqual(usage._called_with,
-                         ('option --nonesuch not recognized', 1))
+                         ('NO MESSAGE', 1))
 
     def test_run_w_help(self):
         builder = self._makeOne()
@@ -318,7 +490,7 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
 
     def test_run_wo_single_arg_non_absolute(self):
         import os
-
+        self.maxDiff = None
         builder = self._makeOne()
         tempdir = self._makeTempDir()
         where = os.path.join(tempdir, 'foo', '..', 'bar')
@@ -337,14 +509,13 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
             "Changed mode for %(instance_home)s/bin/zeoctl to 755",
             "Wrote file %(instance_home)s/bin/runzeo",
             "Changed mode for %(instance_home)s/bin/runzeo to 755",
-            "",
+            ""
         ]) % params
 
         with TempStdout() as temp_out_file:
             with TempUmask(0o022):
                 builder.run([where])
-
-            self.assertEqual(temp_out_file.getvalue(), expected_out)
+                self.assertEqual(temp_out_file.getvalue(), expected_out)
 
         self.assertTrue(os.path.exists(os.path.join(abswhere, 'etc')))
         self.assertTrue(os.path.exists(os.path.join(abswhere, 'var')))
