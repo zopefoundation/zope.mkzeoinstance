@@ -1,7 +1,7 @@
 Changelog
 =========
 
-5.1 (unreleased)
+5.1 (2023-04-28)
 ----------------
 
 - Add configuration option ``-b`` resp. ``--blobs`` for passing blob directory
