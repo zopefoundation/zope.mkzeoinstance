@@ -4,7 +4,8 @@ Changelog
 5.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add configuration option ``-b`` resp. ``--blobs`` for passing blob directory
+  path. (`#16 <https://github.com/zopefoundation/zope.mkzeoinstance/pull/16>`_)
 
 
 5.0 (2023-02-09)
