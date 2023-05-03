@@ -182,7 +182,7 @@ class ZEOInstanceBuilder:
         makedir(home, "bin")
 
         # Create dir only when default is selected
-        if ZEO_DEFAULT_BLOB_DIR in params.get('blob_dir', ''):
+        if ZEO_DEFAULT_BLOB_DIR in params.setdefault('blob_dir', ''):
             makedir(home, "var/blobs")
 
         makefile(ZEO_CONF_TEMPLATE, home, "etc", "zeo.conf", **params)
