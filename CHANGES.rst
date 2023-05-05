@@ -4,7 +4,7 @@ Changelog
 5.2 (unreleased)
 ----------------
 
-- Optional `blob_dir` parameter.
+- Make ``blob_dir`` parameter added in 5.1 optional.
   (`#18 <https://github.com/zopefoundation/zope.mkzeoinstance/pull/18>`_)
 
 
