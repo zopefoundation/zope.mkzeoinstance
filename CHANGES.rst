@@ -4,7 +4,8 @@ Changelog
 5.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Optional `blob_dir` parameter.
+  (`#18 <https://github.com/zopefoundation/zope.mkzeoinstance/pull/18>`_)
 
 
 5.1 (2023-04-28)

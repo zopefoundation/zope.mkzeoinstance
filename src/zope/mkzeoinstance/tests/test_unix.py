@@ -423,6 +423,71 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
         with open(zeo_conf_path) as f:
             self.assertEqual(f.read(), expected_out)
 
+    def test_zeo_conf_content_w_missing_blob_param(self):
+        import os
+
+        builder = self._makeOne()
+        params = self._makeParams()
+
+        # there may be packages out there
+        # which do not provide the new parameter "blob_dir".
+        del params["blob_dir"]
+
+        instance_home = params['instance_home']
+        zeo_conf_path = os.path.join(instance_home, 'etc', 'zeo.conf')
+        expected_out = "\n".join([
+            "# ZEO configuration file",
+            "",
+            "%%define INSTANCE %(instance_home)s",
+            "",
+            "<zeo>",
+            "  address 99999",
+            "  read-only false",
+            "  invalidation-queue-size 100",
+            "  # pid-filename $INSTANCE/var/ZEO.pid",
+            "  # monitor-address PORT",
+            "  # transaction-timeout SECONDS",
+            "</zeo>",
+            "",
+            "<filestorage 1>",
+            "  path $INSTANCE/var/Data.fs",
+            "  ",
+            "</filestorage>",
+            "",
+            "<eventlog>",
+            "  level info",
+            "  <logfile>",
+            "    path $INSTANCE/log/zeo.log",
+            "  </logfile>",
+            "</eventlog>",
+            "",
+            "<runner>",
+            "  program $INSTANCE/bin/runzeo",
+            "  socket-name $INSTANCE/var/zeo.zdsock",
+            "  daemon true",
+            "  forever false",
+            "  backoff-limit 10",
+            "  exit-codes 0, 2",
+            "  directory $INSTANCE",
+            "  default-to-interactive true",
+            "  # user zope",
+            "  python %(executable)s",
+            "  zdrun %(zdaemon_home)s/zdaemon/zdrun.py",
+            "",
+            "  # This logfile should match the one in the zeo.conf file.",
+            ("  # It is used by zdctl's logtail command, "
+             "zdrun/zdctl doesn't write it."),
+            "  logfile $INSTANCE/log/zeo.log",
+            "</runner>",
+            '',
+        ]) % params
+
+        with TempStdout():
+            builder.create(instance_home, params)
+
+        with open(zeo_conf_path) as f:
+            self.assertEqual(f.read(), expected_out)
+
     def test_zeoctl_content(self):
         import os
         params = self._makeParams()
