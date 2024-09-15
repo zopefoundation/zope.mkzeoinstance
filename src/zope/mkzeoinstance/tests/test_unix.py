@@ -606,8 +606,10 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
 
         with open(os.path.join(instance_home, 'etc', 'zeo.conf')) as f:
             conf = f.read()
-        self.assertTrue(
-            'address 8888' in [x.strip() for x in conf.splitlines()])
+        self.assertIn(
+            'address 8888',
+            [x.strip() for x in conf.splitlines()]
+        )
 
     def test_run_wo_two_args_w_host(self):
         import os
@@ -622,8 +624,10 @@ class ZEOInstanceBuilderTests(_WithTempdir, unittest.TestCase):
 
         with open(os.path.join(instance_home, 'etc', 'zeo.conf')) as f:
             conf = f.read()
-        self.assertTrue(
-            'address localhost:8888' in [x.strip() for x in conf.splitlines()])
+        self.assertIn(
+            'address localhost:8888',
+            [x.strip() for x in conf.splitlines()]
+        )
 
 
 class UtilityFunctionsTest(_WithTempdir, unittest.TestCase):
