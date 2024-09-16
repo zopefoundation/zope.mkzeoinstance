@@ -18,7 +18,7 @@ from setuptools import setup
 
 setup(
     name='zope.mkzeoinstance',
-    version='6.0',
+    version='6.1.dev0',
     url='https://github.com/zopefoundation/zope.mkzeoinstance',
     license='ZPL 2.1',
     description='Make standalone ZEO database server instances',
